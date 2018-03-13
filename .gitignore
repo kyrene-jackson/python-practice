@@ -103,3 +103,6 @@ ENV/
 # dsstore
 .DS_Store
 
+# ignore .idea folder
+.idea/
+
