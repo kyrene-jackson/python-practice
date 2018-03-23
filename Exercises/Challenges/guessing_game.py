@@ -4,15 +4,13 @@ import random
 class Game:
 
     RULES = """
-            <--------------------------------GUESS THE NUMBER-------------------------------->
-            Welcome to Guess the Number!                                       
+    
             I'm going to think of a number between 1 and 100                    
-            while you try and guess what it is! Remember,                       /\-/\ 
-            you cannot guess a number less than 1 or greater than 100!         (=^Y^=)
-            I'll give you hints with each guess on how close you are to         (>o<)
+            while you try and guess what it is! Remember,                       
+            you cannot guess a number less than 1 or greater than 100!         
+            I'll give you hints with each guess on how close you are to         
             guessing my number. When you finally guess it, i'll tell
             you how many guesses it took! Good luck!
-            <--------------------------------+++++++++++++++-------------------------------->
             
             """
 
