@@ -23,7 +23,7 @@ game = Game(player)
 
 
 game.start_game()
-print(game.mystery_number)
+# print(game.mystery_number)
 game.get_valid_player_guess()
 
 while not game.correct_number():
