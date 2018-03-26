@@ -1,92 +1,118 @@
 import random
+from tkinter import *
 
 
-class Game:
+class GuessingGame:
 
     RULES = """
-    
+
             I'm going to think of a number between 1 and 100                    
             while you try and guess what it is! Remember,                       
             you cannot guess a number less than 1 or greater than 100!         
             I'll give you hints with each guess on how close you are to         
             guessing my number. When you finally guess it, i'll tell
             you how many guesses it took! Good luck!
-            
+
             """
 
-    def __init__(self, player):
-        self.player = player
-        self.current_guess = None
-        self.mystery_number = random.randint(1, 100)
+    def __init__(self, master):
+        self.master = master
+        master.title("Guessing Game")
 
-    def start_game(self):
-        print(Game.RULES)
+        self.secret_number = random.randint(1, 100)
+        self.guess = None
+        self.num_guesses = [0]
 
-    def get_valid_player_guess(self):
-        while True:
-            try:
-                player_input = int(input("What is my number? "))
+        self.message = self.RULES
+        self.label_text = StringVar()
+        self.label_text.set(self.message)
+        self.label = Label(master, textvariable=self.label_text)
 
-            except ValueError:
-                print("Oops! That was not a valid number, try again...")
-                continue
+        vcmd = master.register(self.validate)
+        self.entry = Entry(master, validate="key", validatecommand=(vcmd, '%P'))
 
-            if self.valid_guess(player_input):
-                self.current_guess = player_input
-                return self.current_guess
+        self.guess_button = Button(master, text="Guess", command=self.guess_number)
+        self.reset_button = Button(master, text="Play again", command=self.reset, state=DISABLED)
 
+        self.label.grid(row=0, column=0, columnspan=2, sticky=W+E)
+        self.entry.grid(row=1, column=0, columnspan=2, sticky=W+E)
+        self.guess_button.grid(row=2, column=0)
+        self.reset_button.grid(row=2, column=1)
+
+    def validate(self, new_text):
+        if not new_text:
+            self.guess = None
+            return True
+
+        try:
+            guess = int(new_text)
+            if 1 <= guess <= 100:
+                self.guess = guess
+                return True
             else:
-                print("OUT OF BOUNDS!")
+                return False
+        except ValueError:
+            self.message = "Oops! That was not a valid number, try again..."
+            return False
 
-    def valid_guess(self, number):
-        if 1 <= number <= 100:
-            return True
-        return False
+    def guess_number(self):
+        if self.guess != self.secret_number:
 
-    def add_to_guess_list(self, guess_list):
-        return guess_list.append(self.current_guess)
+            if self.guess is None:
+                self.message = "Guess a number from 1 to 100"
 
-    def correct_number(self):
-        return self.current_guess == self.mystery_number
+            if self.first_round():
+                if self.in_range():
+                    self.message = "WARM!"
+                else:
+                    self.message = "COLD!"
 
-    def is_in_range(self, player_number):
-        return abs(self.mystery_number - player_number) in range(1, 11)
+            elif not self.first_round():
+                if self.closer():
+                    self.message = "WARMER!"
+                else:
+                    self.message = "COLDER!"
 
-    def play_round(self):
-        pass
+        else:
+            self.message = "You got it! You guessed the number after {} try(s)".format(len(self.num_guesses) - 1)
+            self.guess_button.configure(state=DISABLED)
+            self.reset_button.configure(state=NORMAL)
 
-    def previous_guess(self, guess_list):
-        return guess_list[-1]
+        # debug -> print(self.secret_number)
 
-    def game_stats(self, guess_list):
-        for index, value in enumerate(guess_list, start=1):
-            print('On turn {} you guessed {}'.format(index, value))
+        self.num_guesses.append(self.guess)
+        self.label_text.set(self.message)
 
-    def current_status(self, guess_list):
-        if abs(self.mystery_number - self.current_guess) < abs(self.mystery_number - self.previous_guess(guess_list)):
-            return True
-        return False
+    def reset(self):
+        self.entry.delete(0, END)
+        self.secret_number = random.randint(1, 100)
+        self.guess = 0
+        self.num_guesses = 0
 
+        self.message = self.RULES
+        self.label_text.set(self.message)
 
-class Player:
-
-    def __init__(self):
-        self.guesses = [0]
+        self.guess_button.configure(state=NORMAL)
+        self.reset_button.configure(state=DISABLED)
 
     def first_round(self):
-        return len(self.guesses) == 1
+        return len(self.num_guesses) == 1
 
-    def total_guess_count(self):
-        return len(self.guesses)
+    def in_range(self):
+        return abs(self.secret_number - self.guess) in range(1, 11)
+
+    def previous_guess(self):
+        return self.num_guesses[-1]
+
+    def closer(self):
+        if abs(self.secret_number - self.guess) < abs(self.secret_number - self.previous_guess()):
+            return True
+        return False
+
+    def add_guess(self):
+        return self.num_guesses.append(self.guess)
 
 
-
-
-
-
-
-
-
-
-
-
+root = Tk()
+my_gui = GuessingGame(root)
+root.mainloop()
