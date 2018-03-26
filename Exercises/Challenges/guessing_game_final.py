@@ -1,6 +1,7 @@
 import random
 from tkinter import *
 
+
 class GuessingGame:
 
     RULES = """
@@ -55,32 +56,31 @@ class GuessingGame:
             return False
 
     def guess_number(self):
-        self.num_guesses.append(self.guess)
+        if self.guess != self.secret_number:
 
-        if self.guess is None:
-            self.message = self.RULES
+            if self.guess is None:
+                self.message = "Guess a number from 1 to 100"
 
-        elif self.guess == self.secret_number:
-            self.message = "Congratulations! You guessed the number after {} try(s)".format(len(self.num_guesses))
+            if self.first_round():
+                if self.in_range():
+                    self.message = "WARM!"
+                else:
+                    self.message = "COLD!"
+
+            elif not self.first_round():
+                if self.closer():
+                    self.message = "WARMER!"
+                else:
+                    self.message = "COLDER!"
+
+        else:
+            self.message = "You got it! You guessed the number after {} try(s)".format(len(self.num_guesses) - 1)
             self.guess_button.configure(state=DISABLED)
             self.reset_button.configure(state=NORMAL)
 
-        if self.first_round():
-            if self.in_range():
-                self.message = "WARM!"
-            else:
-                self.message = "COLD!"
-        elif not self.first_round():
-            if self.closer():
-                self.message = "WARMER!"
-            else:
-                self.message = "COLDER!"
+        # debug -> print(self.secret_number)
 
-        # elif self.guess < self.secret_number:
-        #     self.message = "Too low! Guess again!"
-        # else:
-        #     self.message = "Too high! Guess again!"
-
+        self.num_guesses.append(self.guess)
         self.label_text.set(self.message)
 
     def reset(self):
@@ -96,7 +96,7 @@ class GuessingGame:
         self.reset_button.configure(state=DISABLED)
 
     def first_round(self):
-        return len(self.num_guesses) == 2
+        return len(self.num_guesses) == 1
 
     def in_range(self):
         return abs(self.secret_number - self.guess) in range(1, 11)
@@ -109,8 +109,8 @@ class GuessingGame:
             return True
         return False
 
-
-
+    def add_guess(self):
+        return self.num_guesses.append(self.guess)
 
 
 root = Tk()
