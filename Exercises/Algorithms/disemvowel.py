@@ -16,13 +16,17 @@ def disemvowel(string):
 
     vowels_in_string = [letter for letter in string if letter.lower() in vowels]
 
-    for letter in string_list:
+    for letter in string:
         if letter in vowels_in_string:
             string_list.remove(letter)
     return "".join(string_list)
 
 
+print(disemvowel("""No offense but,
+Your writing is among the worst I've ever read"""))
+
 class DisemvowelTest(TestCase):
     def test_disemvowel(self):
         self.assertEqual(disemvowel("This website is for losers LOL!"),
                            "Ths wbst s fr lsrs LL!")
+
